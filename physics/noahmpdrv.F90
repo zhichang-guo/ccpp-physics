@@ -127,7 +127,8 @@
   subroutine noahmpdrv_run                                       &
 !...................................
 !  ---  inputs:
-    ( im, km, lsnowl, itime, ps, u1, v1, t1, q1, soiltyp,soilcol,&
+    ( im_start,                                                  &
+      im, km, lsnowl, itime, ps, u1, v1, t1, q1, soiltyp,soilcol,&
       vegtype, sigmaf, dlwflx, dswsfc, snet, delt, tg3, cm, ch,  &
       prsl1, prslk1, prslki, prsik1, zf,pblh, dry, wind, slopetyp,&
       shdmin, shdmax, snoalb, sfalb, flag_iter,con_g,            &
@@ -227,6 +228,7 @@
 !  ---  CCPP interface fields (in call order)
 !
 
+  integer                                , intent(in)    :: im_start   ! horiz start location
   integer                                , intent(in)    :: im         ! horiz dimension and num of used pts
   integer                                , intent(in)    :: km         ! vertical soil layer dimension
   integer                                , intent(in)    :: lsnowl     ! lower bound for snow level arrays
@@ -697,7 +699,7 @@ do i = 1, im
 
       dataset_identifier    = "modified_igbp_modis_noah"
 
-      i_location            = i
+      i_location            = i + im_start - 1
       j_location            = -9999
       latitude              = xlatin(i)
       year_length           = iyrlen
