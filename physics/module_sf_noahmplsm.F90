@@ -3893,6 +3893,9 @@ endif   ! croptype == 0
   real (kind=kind_phys) :: vaie         !total leaf area index + stem area index,effective
   real (kind=kind_phys) :: laisune      !sunlit leaf area index, one-sided (m2/m2),effective
   real (kind=kind_phys) :: laishae      !shaded leaf area index, one-sided (m2/m2),effective
+  real (kind=kind_phys) :: fcet         !fractional canopy evaporation time zhichang
+  real (kind=kind_phys) :: evc0         !canopy evaporation regardless fcet zhichang
+  real (kind=kind_phys) :: cew0         !cew=cew0*fcet                      zhichang
 
   integer :: k         !index
   integer :: iter      !iteration index
@@ -3948,6 +3951,7 @@ endif   ! croptype == 0
         hg     = 0.
         h      = 0.
         qfx    = 0.
+        fcet   = 1.
 
 ! limit lai
 
@@ -4174,7 +4178,8 @@ endif   ! croptype == 0
 ! prepare for latent heat flux above veg.
 
         caw  = 1./rawc
-        cew  = fwet*vaie/rb
+        cew0 = fwet*vaie/rb
+        cew  = fcet*cew0
         ctw  = (1.-fwet)*(laisune/(rb+rssun) + laishae/(rb+rssha))
         cgw  = 1./(rawg+rsurf)
         cond = caw + cew + ctw + cgw
@@ -4190,11 +4195,14 @@ endif   ! croptype == 0
 
         irc = fveg*(air + cir*tv**4)
         shc = fveg*rhoair*cpair*cvh * (  tv-tah)
-        evc = fveg*rhoair*cpair*cew * (estv-eah) / gammav ! barlage: change to v in v3.6
+        evc0= fveg*rhoair*cpair*cew * (estv-eah) / gammav ! barlage: change to v in v3.6
+        evc = evc0*fcet
         tr  = fveg*rhoair*cpair*ctw * (estv-eah) / gammav
 	if (tv > tfrz) then
+          if(evc0 > canliq*latheav/dt) fcet = canliq*latheav/dt/evc0 ! zhichang
           evc = min(canliq*latheav/dt,evc)    ! barlage: add if block for canice in v3.6
 	else
+          if(evc0 > canice*latheav/dt) fcet = canice*latheav/dt/evc0 ! zhichang
           evc = min(canice*latheav/dt,evc)
 	end if
 
@@ -4941,7 +4949,8 @@ endif   ! croptype == 0
 
        if(iter > 1) then
         tmp1 = vkc * (grav/tah) * hg/(rhoair*cpair)
-        if (abs(tmp1) .le. mpe) tmp1 = mpe
+!       if (abs(tmp1) .le. mpe) tmp1 = mpe
+        if (abs(tmp1) .le. mpe) tmp1 = sign(mpe,tmp1) ! zhichang
         molg = -1. * fv**3 / tmp1
         mozg = min( (zpd-z0mg)/molg, 1.)
         mozgh = min( (hcan - zpd)/molg, 1.)
