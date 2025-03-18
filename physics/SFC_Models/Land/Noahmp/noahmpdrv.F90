@@ -1514,6 +1514,11 @@
         parameters%smcref(isoil) = smcref_table (soiltype(isoil))
         parameters%smcwlt(isoil) = smcwlt_table (soiltype(isoil))
       end do
+! GZCT
+      parameters%tdcf(1) = tdcf01_table (soiltype(1))
+      parameters%tdcf(2) = tdcf02_table (soiltype(2))
+      parameters%tdcf(3) = tdcf03_table (soiltype(3))
+      parameters%tdcf(4:size(soiltype)) = tdcf04_table (soiltype(4))
           
       parameters%f1     = f1_table(soiltype(1))
       parameters%refdk  = refdk_table

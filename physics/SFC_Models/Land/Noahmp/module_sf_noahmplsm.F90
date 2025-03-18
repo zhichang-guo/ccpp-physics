@@ -372,6 +372,8 @@ use machine ,   only : kind_phys
      real (kind=kind_phys) :: dwsat(nsoil)        !< saturated soil hydraulic diffusivity
      real (kind=kind_phys) :: quartz(nsoil)       !< soil quartz content
      real (kind=kind_phys) :: f1                  !< soil thermal diffusivity/conductivity coef (not used mb: 20140718)
+! GZCT
+     real (kind=kind_phys) :: tdcf(nsoil)         !< thermal diffusivity and conductivity factor
 !------------------------------------------------------------------------------------------!
 ! from the genparm.tbl file
 !------------------------------------------------------------------------------------------!
@@ -2530,6 +2532,9 @@ endif   ! croptype == 0
        hcpct(iz) = sh2o(iz)*cwat + (1.0-parameters%smcmax(iz))*parameters%csoil &
                 + (parameters%smcmax(iz)-smc(iz))*cpair + sice(iz)*cice
        call tdfcnd (parameters,iz,df(iz), smc(iz), sh2o(iz))
+! GZCT
+! adjust for soil diffusivity and conductivity
+       df(iz)    = df(iz)*parameters%tdcf(iz)
     end do
        
     if ( parameters%urban_flag ) then

@@ -102,6 +102,9 @@ use machine ,   only : kind_phys
 
     real (kind=kind_phys) :: bexp_table(max_soiltyp)   
     real (kind=kind_phys) :: smcdry_table(max_soiltyp)  
+! GZCT
+    real (kind=kind_phys) :: tdcf01_table(max_soiltyp), tdcf02_table(max_soiltyp)
+    real (kind=kind_phys) :: tdcf03_table(max_soiltyp), tdcf04_table(max_soiltyp)
     real (kind=kind_phys) :: f1_table(max_soiltyp)     
     real (kind=kind_phys) :: smcmax_table(max_soiltyp)
     real (kind=kind_phys) :: smcref_table(max_soiltyp)  
@@ -365,9 +368,14 @@ contains
     integer                                        :: slcats
     real (kind=kind_phys), dimension(max_soiltyp)  :: bb, drysmc, maxsmc, refsmc, satpsi, satdk, satdw, wltsmc, qtz,    &
                                                       bvic, axaj, bxaj, xxaj, bdvic, bbvic, gdvic, hc
+! GZCT
+    real (kind=kind_phys), dimension(max_soiltyp)  :: tdcf01, tdcf02, tdcf03, tdcf04
     namelist / noahmp_stas_soil_categories /          sltype, slcats
+! GZCT
+!   namelist / noahmp_soil_stas_parameters /          bb, drysmc, maxsmc, refsmc, satpsi, satdk, satdw, wltsmc, qtz,    &
+!                                                     bvic, axaj, bxaj, xxaj, bdvic, bbvic, gdvic
     namelist / noahmp_soil_stas_parameters /          bb, drysmc, maxsmc, refsmc, satpsi, satdk, satdw, wltsmc, qtz,    &
-                                                      bvic, axaj, bxaj, xxaj, bdvic, bbvic, gdvic
+                                                      bvic, axaj, bxaj, xxaj, bdvic, bbvic, gdvic, tdcf01, tdcf02, tdcf03, tdcf04
     namelist / noahmp_soil_stas_ruc_parameters /      bb, drysmc, hc, maxsmc, refsmc, satpsi, satdk, satdw, wltsmc, qtz,    &
                                                       bvic, axaj, bxaj, xxaj, bdvic, bbvic, gdvic
 
@@ -585,6 +593,11 @@ contains
       bdvic_table = -1.0e36
       gdvic_table = -1.0e36
       bbvic_table = -1.0e36
+! GZCT
+     tdcf01_table = -1.0e36
+     tdcf02_table = -1.0e36
+     tdcf03_table = -1.0e36
+     tdcf04_table = -1.0e36
 
     ! general parameters
       slope_table = -1.0e36
@@ -951,6 +964,11 @@ rsurf_snow_table     = -1.0e36
      bdvic_table (1:slcats) = bdvic (1:slcats)
      gdvic_table (1:slcats) = gdvic (1:slcats)
      bbvic_table (1:slcats) = bbvic (1:slcats)
+! GZCT
+     tdcf01_table(1:slcats) = tdcf01(1:slcats)
+     tdcf02_table(1:slcats) = tdcf02(1:slcats)
+     tdcf03_table(1:slcats) = tdcf03(1:slcats)
+     tdcf04_table(1:slcats) = tdcf04(1:slcats)
 
     !---------------- noahmptable.tbl general parameters
     inquire( file='noahmptable.tbl', exist=file_named )
